@@ -1,34 +1,45 @@
-import pygame
-from pygame.locals import *
+# Little Pong implementation
 
+VERSION = "0"
+
+# color constants RGB format
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+# some constants for the game
+SIZE = (500, 500)
+
+try:
+    import sys
+    import random
+    import math
+    import os
+    import pygame
+    import pong_objects as po
+    from pygame.locals import *
+except ImportError as err:
+    print(err)
+    sys.exit()
 
 
 def main():
+    random.seed()
     pygame.init()
-    screen = pygame.display.set_mode((500, 500), RESIZABLE)
-    pygame.display.set_caption('Pong')
-
-    # Background
-    background = pygame.Surface(screen.get_size())
-    background = background.convert()
-    background.fill(WHITE)
-    
-    while 1:
+    screen = pygame.display.set_mode(SIZE)
+    balls = []
+    for r in (5, 10, 20, 30, 40):
+        balls.append(po.Ball(0, r))
+    # ball = po.Ball(0)
+    screen.fill(BLACK)
+    while True:
         for event in pygame.event.get():
             if event.type == QUIT:
-                return
-            if event.type == VIDEORESIZE:
-                print(event.size)
-                screen = pygame.display.set_mode(event.size, RESIZABLE)
-                background = pygame.Surface(event.size)
-                background = background.convert()
-                background.fill(WHITE)
+                sys.exit()
 
-        screen.blit(background, (0, 0))
+        for b in balls:
+            screen.blit(b.image, (random.randrange(SIZE[0]),
+                        random.randrange(SIZE[1])))
         pygame.display.flip()
+        pygame.time.delay(1000)
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-    
