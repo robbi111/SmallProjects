@@ -6,7 +6,7 @@ VERSION = "0"
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 # some constants for the game
-SIZE = (500, 500)
+SIZE = (800, 640)
 
 try:
     import sys
@@ -38,7 +38,7 @@ def main():
     start_angle = random.random()*2*math.pi - math.pi
     print(start_angle)
     start_speed = 10.0
-    ball = po.Ball((250, 250), (start_angle, start_speed))
+    ball = po.Ball((SIZE[0]/2, SIZE[1]/2), (start_angle, start_speed))
     # main game loop
     screen.blit(background, (0, 0))
     screen.blit(ball.image, ball.get_pos())
