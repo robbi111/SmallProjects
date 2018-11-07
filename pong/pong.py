@@ -27,6 +27,7 @@ def main():
     pygame.init()
     pygame.key.set_repeat(10, 10)
     screen = pygame.display.set_mode(SIZE)
+    pygame.display.set_caption('Pong')
     # set up black background
     background = pygame.Surface(screen.get_size())
     background = background.convert()

@@ -33,7 +33,7 @@ class Ball(pygame.sprite.Sprite):
     def inc_speed(self, inc):
         (angle, z) = self.vector
         self.vector = (angle, z+inc)
-  
+
     def dec_speed(self, dec):
         (angle, z) = self.vector
         new_z = z - dec
@@ -60,7 +60,7 @@ class Ball(pygame.sprite.Sprite):
                 angle = math.pi - angle
                 # self.offcourt()
         self.vector = (angle, z)
-        
+
     def get_pos(self):
         return self.rect
 
