@@ -22,24 +22,40 @@ except ImportError as err:
 
 
 def main():
+    # general initialisation
     random.seed()
     pygame.init()
+    pygame.key.set_repeat(10, 10)
     screen = pygame.display.set_mode(SIZE)
-    balls = []
-    for r in (5, 10, 20, 30, 40):
-        balls.append(po.Ball(0, r))
-    # ball = po.Ball(0)
-    screen.fill(BLACK)
+    # set up black background
+    background = pygame.Surface(screen.get_size())
+    background = background.convert()
+    background.fill(BLACK)
+    # Clock object to control game speed
+    timer = pygame.time.Clock()
+    # game objects
+    start_angle = random.random()*2*math.pi - math.pi
+    print(start_angle)
+    start_speed = 10.0
+    ball = po.Ball((250, 250), (start_angle, start_speed))
+    # main game loop
+    screen.blit(background, (0, 0))
+    screen.blit(ball.image, ball.get_pos())
     while True:
         for event in pygame.event.get():
             if event.type == QUIT:
                 sys.exit()
+            elif event.type == KEYDOWN:
+                if event.key == K_UP:
+                    ball.inc_speed(5)
+                if event.key == K_DOWN:
+                    ball.dec_speed(5)
 
-        for b in balls:
-            screen.blit(b.image, (random.randrange(SIZE[0]),
-                        random.randrange(SIZE[1])))
+        screen.blit(background, ball.rect, ball.rect)
+        ball.update()
+        screen.blit(ball.image, ball.get_pos())
         pygame.display.flip()
-        pygame.time.delay(1000)
+        timer.tick(30)
 
 if __name__ == "__main__":
     main()
