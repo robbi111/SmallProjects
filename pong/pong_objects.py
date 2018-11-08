@@ -46,17 +46,21 @@ class Ball(pygame.sprite.Sprite):
         self.rect = newpos
         (angle, z) = self.vector
 
+        # TODO self.rect must be reset to area bounds
         if not self.area.contains(newpos):
+            print('x={}  y={}'.format(newpos.x, newpos.y))
             tl = not self.area.collidepoint(newpos.topleft)
             tr = not self.area.collidepoint(newpos.topright)
             bl = not self.area.collidepoint(newpos.bottomleft)
             br = not self.area.collidepoint(newpos.bottomright)
-            if tr and tl or (br and bl):
+            if tr and tl:
                 angle = -angle
-            if tl and bl:
+            elif br and bl:
+                angle = -angle
+            elif tl and bl:
                 # self.offcourt()
                 angle = math.pi - angle
-            if tr and br:
+            elif tr and br:
                 angle = math.pi - angle
                 # self.offcourt()
         self.vector = (angle, z)
@@ -70,4 +74,17 @@ class Ball(pygame.sprite.Sprite):
     def calcnewpos(self, rect, vector):
         (angle, z) = vector
         (dx, dy) = (z*math.cos(angle), z*math.sin(angle))
+        # TODO implement that sign of dx and dy is kept
+        if self.rect.right + dx > self.area.width:
+            dx = self.area.width - self.rect.right
+            # dy = dx*math.tan(angle)
+        if self.rect.bottom + dy > self.area.height:
+            dy = self.area.height - self.rect.bottom
+            # dx = dy/math.tan(angle)
+        if self.rect.left + dx < 0:
+            dx = -self.rect.left
+            # dy = abs(dx)*
+        if self.rect.top + dy < 0:
+            dy = -self.rect.top
+            # dx = abs(dy)/math.tan(angle)
         return rect.move(dx, dy)

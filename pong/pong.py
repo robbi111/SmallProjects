@@ -36,8 +36,7 @@ def main():
     timer = pygame.time.Clock()
     # game objects
     start_angle = random.random()*2*math.pi - math.pi
-    print(start_angle)
-    start_speed = 10.0
+    start_speed = 5.0
     ball = po.Ball((SIZE[0]/2, SIZE[1]/2), (start_angle, start_speed))
     # main game loop
     screen.blit(background, (0, 0))
