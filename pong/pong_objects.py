@@ -29,6 +29,7 @@ class Ball(pygame.sprite.Sprite):
         self.image.set_colorkey((0, 0, 0))
         self.image.set_alpha(255)
         pygame.draw.circle(self.image, pygame.Color(255, 255, 255), (r, r), r)
+        self.opensides = False
 
     def inc_speed(self, inc):
         (angle, z) = self.vector
@@ -44,26 +45,6 @@ class Ball(pygame.sprite.Sprite):
     def update(self):
         newpos = self.calcnewpos(self.rect, self.vector)
         self.rect = newpos
-        (angle, z) = self.vector
-
-        # TODO self.rect must be reset to area bounds
-        if not self.area.contains(newpos):
-            print('x={}  y={}'.format(newpos.x, newpos.y))
-            tl = not self.area.collidepoint(newpos.topleft)
-            tr = not self.area.collidepoint(newpos.topright)
-            bl = not self.area.collidepoint(newpos.bottomleft)
-            br = not self.area.collidepoint(newpos.bottomright)
-            if tr and tl:
-                angle = -angle
-            elif br and bl:
-                angle = -angle
-            elif tl and bl:
-                # self.offcourt()
-                angle = math.pi - angle
-            elif tr and br:
-                angle = math.pi - angle
-                # self.offcourt()
-        self.vector = (angle, z)
 
     def get_pos(self):
         return self.rect
@@ -74,17 +55,30 @@ class Ball(pygame.sprite.Sprite):
     def calcnewpos(self, rect, vector):
         (angle, z) = vector
         (dx, dy) = (z*math.cos(angle), z*math.sin(angle))
-        # TODO implement that sign of dx and dy is kept
-        if self.rect.right + dx > self.area.width:
-            dx = self.area.width - self.rect.right
-            # dy = dx*math.tan(angle)
-        if self.rect.bottom + dy > self.area.height:
-            dy = self.area.height - self.rect.bottom
-            # dx = dy/math.tan(angle)
-        if self.rect.left + dx < 0:
-            dx = -self.rect.left
-            # dy = abs(dx)*
-        if self.rect.top + dy < 0:
-            dy = -self.rect.top
-            # dx = abs(dy)/math.tan(angle)
-        return rect.move(dx, dy)
+        newpos = self.rect.move(dx, dy)
+
+        if not self.area.contains(newpos):
+            tl = not self.area.collidepoint(newpos.topleft)
+            tr = not self.area.collidepoint(newpos.topright)
+            bl = not self.area.collidepoint(newpos.bottomleft)
+            br = not self.area.collidepoint(newpos.bottomright)
+            if tl and tl and br and bl:
+                angle = angle - math.pi
+            elif tr and tl:
+                angle = -angle
+            elif br and bl:
+                angle = -angle
+            elif tl and bl:
+                if self.opensides:
+                    z = 0
+                angle = math.pi - angle
+            elif tr and br:
+                if self.opensides:
+                    z = 0
+                angle = math.pi - angle
+        
+        self.vector = (angle, z)
+        return newpos
+
+    def toggle_open_sides(self):
+        self.opensides = ~self.opensides
