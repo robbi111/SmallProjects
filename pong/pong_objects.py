@@ -5,6 +5,7 @@ try:
     import sys
     import math
     import pygame
+    from pong import colors, game_dim
 except ImportError as err:
     print(err)
     sys.exit()
@@ -25,10 +26,10 @@ class Ball(pygame.sprite.Sprite):
         self.vector = vector
         self.area = pygame.display.get_surface().get_rect()
         # remove black background
-        self.image.fill((0, 0, 0))
-        self.image.set_colorkey((0, 0, 0))
+        self.image.fill(colors["BLACK"])
+        self.image.set_colorkey(colors["BLACK"])
         self.image.set_alpha(255)
-        pygame.draw.circle(self.image, pygame.Color(255, 255, 255), (r, r), r)
+        pygame.draw.circle(self.image, colors["WHITE"], (r, r), r)
         self.opensides = False
 
     def inc_speed(self, inc):
@@ -76,9 +77,41 @@ class Ball(pygame.sprite.Sprite):
                 if self.opensides:
                     z = 0
                 angle = math.pi - angle
-        
+
         self.vector = (angle, z)
         return newpos
 
     def toggle_open_sides(self):
         self.opensides = ~self.opensides
+
+
+class Paddle(pygame.sprite.Sprite):
+
+    def __init__(self, side):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.Surface(game_dim["PADDLE_SIZE"])
+        self.rect = self.image.get_rect()
+        self.area = pygame.display.get_surface().get_rect()
+        self.movepos = 0
+        if side == "left":
+            self.rect.x = 0
+        elif side == "right":
+            self.rect.right = self.area.width
+        self.rect.centery = self.area.height/2
+        self.image.fill(colors["WHITE"])
+        
+    def update(self, *args):
+        newpos = self.rect.move(0, self.movepos)
+        self.movepos = 0
+        if not self.area.contains(newpos):
+            if newpos.top < 0:
+                newpos.top = 0
+            elif newpos.bottom > self.area.height:
+                newpos.bottom = self.area.height
+        self.rect = newpos
+
+    def moveup(self, step):
+        self.movepos = self.movepos - step
+
+    def movedown(self, step):
+        self.movepos = self.movepos + step
